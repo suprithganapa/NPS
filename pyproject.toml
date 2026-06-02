@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nps-lab-el"
+version = "1.0.0"
+description = "Stealthy Single-Packet Authorization Framework using ICMP Covert Channels"
+requires-python = ">=3.11"
+dependencies = [
+    "scapy>=2.5.0",
+    "cryptography>=41.0.0",
+    "pyotp>=2.9.0",
+    "reedsolo>=1.7.0",
+    "pydantic>=2.0.0",
+    "click>=8.1.0",
+    "rich>=13.0.0",
+    "PyYAML>=6.0.0",
+    "numpy>=1.24.0",
+    "scipy>=1.11.0",
+]
+
+[project.optional-dependencies]
+hmm = ["hmmlearn>=0.3.0"]
+dev = ["pytest>=7.4.0", "ruff>=0.1.0", "mypy>=1.5.0"]
+
+[project.scripts]
+knock-client = "nps_lab_el.cli.knock_client:main"
+sniffer-daemon = "nps_lab_el.cli.sniffer_daemon:main"
+drm-loader = "nps_lab_el.cli.drm_loader:main"
+eval-harness = "nps_lab_el.cli.eval_harness:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_return_any = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["simulation: tests that run without raw sockets"]

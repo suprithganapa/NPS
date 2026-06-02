@@ -1,0 +1,37 @@
+server:
+  ip: "192.168.1.10"
+  iface: "\\Device\\NPF_{REPLACE-WITH-YOUR-GUID}"
+
+auth:
+  totp_secret: "JBSWY3DPEHPK3PXP"
+  window_seconds: 60
+  ttl_auth_seconds: 300
+
+channels:
+  jitter:
+    enabled: true
+    t0_ms: 1000
+    delta_ms: 50
+    tau_ms: 25
+  header:
+    enabled: false
+    lfsr_seed: 44257
+    windows_compat: true
+  dns:
+    enabled: false
+
+fec:
+  enabled: true
+  n: 32
+  k: 28
+
+drm:
+  enabled: true
+  fragment_bits: 32
+
+targets:
+  allowlist:
+    - "192.168.1.0/24"
+
+firewall:
+  mode: "log_only"
