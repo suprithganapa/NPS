@@ -18,3 +18,5 @@ eval/report.json
 .pytest_cache/
 *.log
 .env
+server_secrets/
+artifacts/sample_video_decrypted.mp4
