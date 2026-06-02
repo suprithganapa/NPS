@@ -29,7 +29,7 @@ def test_config(test_totp_secret: str) -> AppConfig:
             ttl_auth_seconds=300,
         ),
         channels=ChannelsConfig(
-            jitter=JitterConfig(enabled=True, t0_ms=1000, delta_ms=50, tau_ms=25),
+            jitter=JitterConfig(enabled=True, t0_ms=20, delta_ms=5, tau_ms=2),
         ),
         fec=FecConfig(enabled=True, n=32, k=28),
     )

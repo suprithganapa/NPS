@@ -10,9 +10,9 @@ auth:
 channels:
   jitter:
     enabled: true
-    t0_ms: 1000
-    delta_ms: 50
-    tau_ms: 25
+    t0_ms: 20        # 512 packets × 20ms ≈ 10s; use 1000 to blend with OS ping
+    delta_ms: 5
+    tau_ms: 2
   header:
     enabled: false
     lfsr_seed: 44257

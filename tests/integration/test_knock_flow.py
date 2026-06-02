@@ -23,9 +23,9 @@ def _make_valid_token(totp_secret: str, window_seconds: int = 60) -> AuthToken:
     )
 
 
-def _token_to_events(token: AuthToken, src: str = "10.0.0.1") -> list[CaptureEvent]:
+def _token_to_events(token: AuthToken, t0_ms: int = 20, delta_ms: int = 5, src: str = "10.0.0.1") -> list[CaptureEvent]:
     bits = token.to_bits()
-    iats = encode_with_fec(bits, n=32, k=28, t0_ms=1000, delta_ms=50)
+    iats = encode_with_fec(bits, n=32, k=28, t0_ms=t0_ms, delta_ms=delta_ms)
     events = []
     t = 1000.0
     events.append(CaptureEvent(
@@ -45,18 +45,19 @@ def _token_to_events(token: AuthToken, src: str = "10.0.0.1") -> list[CaptureEve
 class TestKnockFlow:
     def test_end_to_end_authorization(self, test_config):
         token = _make_valid_token(test_config.auth.totp_secret, test_config.auth.window_seconds)
-        events = _token_to_events(token)
+        jc = test_config.channels.jitter
+        events = _token_to_events(token, t0_ms=jc.t0_ms, delta_ms=jc.delta_ms)
         engine = AuthEngine(test_config)
         session = engine.process_events(events)
         assert session.state == AuthorizationState.AUTHORIZED
 
     def test_replay_rejected(self, test_config):
         token = _make_valid_token(test_config.auth.totp_secret, test_config.auth.window_seconds)
-        events = _token_to_events(token)
+        jc = test_config.channels.jitter
+        events = _token_to_events(token, t0_ms=jc.t0_ms, delta_ms=jc.delta_ms)
         engine = AuthEngine(test_config)
         session1 = engine.process_events(events)
         assert session1.state == AuthorizationState.AUTHORIZED
-        # Replay same events
         session2 = engine.process_events(events)
         assert session2.state == AuthorizationState.DENIED
 
@@ -67,7 +68,8 @@ class TestKnockFlow:
             channel_mask=0,
             mac=b"\x00" * 16,
         )
-        events = _token_to_events(token)
+        jc = test_config.channels.jitter
+        events = _token_to_events(token, t0_ms=jc.t0_ms, delta_ms=jc.delta_ms)
         engine = AuthEngine(test_config)
         session = engine.process_events(events)
         assert session.state == AuthorizationState.DENIED
